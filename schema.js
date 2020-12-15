@@ -6,7 +6,9 @@ const {
 
 // Mongoose Operations
 const RootQuery = require('./graphqlOperations/RootQuery');
+const Mutation = require('./graphqlOperations/Mutations');
 
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation: Mutation
 });

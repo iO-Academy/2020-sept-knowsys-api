@@ -2,7 +2,7 @@
   "name": "knowsys",
   "version": "1.0.0",
   "description": "api for knowsys",
-  "main": "index.js",
+  "main": "index_original.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Mayden-Academy/2020-sept-knowsys-ui#readme",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
