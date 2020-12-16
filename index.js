@@ -86,8 +86,18 @@ app.use(cors());
 
 app.use('/graphql', graphqlHTTP({
     schema: require('./schema.js'),
+
     graphiql: true
 }))
+
+//only user with jwt shoudl be able to access this page
+app.use('/user', bodyParser.json(), jwtAuth, graphqlHTTP(req => ({
+        schema: require('./schema.js'),
+        context: {
+            user: req.user
+        }
+    }))
+)
 
 app.use('/api', bodyParser.json(), jwtAuth, graphqlHTTP(req => ({
     schema: require('./schema.js'),

@@ -88,12 +88,18 @@ module.exports = new GraphQLObjectType({
                 const user = await UserModel.findOne({ "username": args.username})
                 if (!user) {
                     throw new Error(`Could not find a user with username ${args.username} `)
+
                 }
                 // console.log('arg input pwd: ' )
                 // console.log(args.password)
                 // console.log(user.password)
                 const valid = await bcrypt.compare(args.password, user.password)
                 if (!valid) {
+                    //need to return better errorr msg!
+                    // return response.status(404).json({
+                    //     error: true,
+                    //     message: ‘Username or Password is Wrong’
+                    //     });
                     throw new Error('Incorrect password, please try again')
                 }
                 let token = jsonwebtoken.sign({
