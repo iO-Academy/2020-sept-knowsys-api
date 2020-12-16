@@ -89,7 +89,7 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true
 }))
 
-app.use('/login', bodyParser.json(), jwtAuth, graphqlHTTP(req => ({
+app.use('/api', bodyParser.json(), jwtAuth, graphqlHTTP(req => ({
     schema: require('./schema.js'),
         context: {
             user: req.user
