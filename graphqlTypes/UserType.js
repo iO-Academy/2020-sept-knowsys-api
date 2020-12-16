@@ -30,6 +30,10 @@ module.exports = new GraphQLObjectType({
         bio: {
             type: GraphQLString,
             description: 'Bio of user'
+        },
+        access_token: {
+            type: GraphQLString,
+            description: 'Access token of user'
         }
     })
 });
