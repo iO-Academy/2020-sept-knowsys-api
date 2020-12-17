@@ -31,7 +31,7 @@ const jwtAuth = expressjwt( {
 
 app.use(jwtAuth);
 
-app.use(cors());
+app.use(cors({origin:  "http://localhost:3000"}));
 
 
 

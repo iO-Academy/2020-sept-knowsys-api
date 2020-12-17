@@ -40,31 +40,56 @@ module.exports = new GraphQLObjectType({
                 }
             },
             async resolve(parent, args) {
-                let newUser = await new UserModel({
-                    email: args.email,
-                    username: args.username,
-                    password: await bcrypt.hash(args.password, 10),
-                    bio: args.bio
-                })
-                newUser.save();
+                //checek db for  unique username
+                // let wantedUsername = args.username;
+                // let temp = UserModel.findOne({ "username": args.username})
+                //return bad shit msg ie data objj w msg inside
 
-                // console.log(newUser)
-                // console.log('about to do token')
-                let token = jsonwebtoken.sign({
-                        sub: newUser.id,
-                        email: newUser.email
-                    },
-                    'mossypiglets-and-pangolins',{
-                        expiresIn: '3 hours'
+
+
+
+                try {
+
+                    let newUser = await new UserModel({
+                        email: args.email,
+                        username: args.username,
+                        password: await bcrypt.hash(args.password, 10),
+                        bio: args.bio
                     })
-                //should we add token to user?
-                newUser.access_token = token;
-                // console.log('heres token')
-                // console.log(token)
-                // console.log('after token')
-                // console.log(newUser.access_token)
-                // console.log('saving new user...')
-                return token;
+
+                    let resultOfSave = await newUser.save( );
+
+
+                    if (resultOfSave) {
+
+                    }
+                    //otjer
+
+                    // console.log('about to do token')
+                    let token = jsonwebtoken.sign({
+                            sub: newUser.id,
+                            email: newUser.email
+                        },
+                        'mossypiglets-and-pangolins',{
+                            expiresIn: '3 hours'
+                        })
+                    //should we add token to user?
+                    newUser.access_token = token;
+                    // console.log('heres token')
+                    // console.log(token)
+                    // console.log('after token')
+                    // console.log(newUser.access_token)
+                    // console.log('saving new user...')
+
+
+                    //must returnn the new user here, not hte token!
+                    return newUser;
+                }
+                catch(e) {
+                    //create nice custome error msg for fronet end
+                    return new Error("Couldn't add user with the same username or email address");
+                }
+
             }
         },
 
