@@ -18,9 +18,10 @@ const UserModel = require('../mongoModels/UserModel');
 module.exports = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
+        // Mutation to Add New User to DB
         addUser: {
             type: UserType,
-            description: 'Add a single user ie register a new user',
+            description: 'Add a Single User ie Register a New User',
             args: {
                 email: {
                     type: new GraphQLNonNull(GraphQLString),
@@ -40,16 +41,8 @@ module.exports = new GraphQLObjectType({
                 }
             },
             async resolve(parent, args) {
-                //checek db for  unique username
-                // let wantedUsername = args.username;
-                // let temp = UserModel.findOne({ "username": args.username})
-                //return bad shit msg ie data objj w msg inside
-
-
-
-
                 try {
-
+                    //create new user, Mongo will prevent users being created wtih an existing email or username
                     let newUser = await new UserModel({
                         email: args.email,
                         username: args.username,
@@ -57,15 +50,14 @@ module.exports = new GraphQLObjectType({
                         bio: args.bio
                     })
 
-                    let resultOfSave = await newUser.save( );
+                    let validNewUser = await newUser.save( );
 
-
-                    if (resultOfSave) {
-
+                    //  todo - need to test this new error msg!
+                    if (!validNewUser) {
+                        throw new Error(`Could not save new user with username ${args.username}`)
                     }
-                    //otjer
 
-                    // console.log('about to do token')
+                    // log the new user in and give them a new jwtoken
                     let token = jsonwebtoken.sign({
                             sub: newUser.id,
                             email: newUser.email
@@ -73,26 +65,18 @@ module.exports = new GraphQLObjectType({
                         'mossypiglets-and-pangolins',{
                             expiresIn: '3 hours'
                         })
-                    //should we add token to user?
+                   
+                    //return new user here, with token inside
                     newUser.access_token = token;
-                    // console.log('heres token')
-                    // console.log(token)
-                    // console.log('after token')
-                    // console.log(newUser.access_token)
-                    // console.log('saving new user...')
-
-
-                    //must returnn the new user here, not hte token!
-                    return newUser;
+                    return newUser; 
                 }
-                catch(e) {
-                    //create nice custome error msg for fronet end
-                    return new Error("Couldn't add user with the same username or email address");
+                catch(err) {
+                    return new Error(`Could not add new user with the same username ${args.username} or email address ${args.email}`
                 }
-
             }
         },
 
+        // Mutation to Log User In by checking for Existing UserName
         loginUserName: {
             type: UserType,
             description: 'Login and Retrieve a single User by Username and Password',
@@ -103,30 +87,23 @@ module.exports = new GraphQLObjectType({
                 },
                 password: {
                     type: GraphQLString,
-                    description: 'password'
+                    description: 'Password'
                 }
             },
             async resolve(parent, args)
             {
-                // console.log('resolver loginUserName');
-                //user contains stuff regardless of whether a match is found or not!
-                const user = await UserModel.findOne({ "username": args.username})
-                if (!user) {
-                    throw new Error(`Could not find a user with username ${args.username} `)
-
+                //FYI validUser contains stuff regardless of whether a match is found or not!
+                const validUser = await UserModel.findOne({ "username": args.username})
+                if (!validUser) {
+                    throw new Error(`Could not find a user with username ${args.username}`)
                 }
-                // console.log('arg input pwd: ' )
-                // console.log(args.password)
-                // console.log(user.password)
-                const valid = await bcrypt.compare(args.password, user.password)
-                if (!valid) {
-                    //need to return better errorr msg!
-                    // return response.status(404).json({
-                    //     error: true,
-                    //     message: ‘Username or Password is Wrong’
-                    //     });
+
+                const validPassword = await bcrypt.compare(args.password, user.password)
+                if (!validPassword) {
                     throw new Error('Incorrect password, please try again')
                 }
+
+                //log the existing user in and give them a new jwtoken
                 let token = jsonwebtoken.sign({
                         sub: user.id,
                         email: user.email
@@ -134,12 +111,9 @@ module.exports = new GraphQLObjectType({
                     'mossypiglets-and-pangolins',{
                         expiresIn: '3 hours'
                     })
-                //token is being printed, but not sure where its returned to?
-                //can return the user in GQL or the token in console but not both, WHY??
-                //and WHERE  does this stuff get returned to, would we see it in the result  of a  FETCH request??
-                //can add token to user obj and see in console, but not in returned GQL data object
+
+                // FYI can add token to user object and see it in console, but not in returned GQL data object
                 user.access_token = token;
-                // console.log(user);
                 return  user;
             }
         }
