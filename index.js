@@ -12,7 +12,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 //change this URL if using cloud DB like Atlas
-mongoose.connect('mongodb://root:password@localhost:27017', {
+// osx setup = 'mongodb://root:password@localhost:27017'
+// TODO - setup & force MongoDB auth on Windows, so username & pwd are required to connect to specified db
+mongoose.connect('mongodb://localhost:27017', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     dbName: 'tildb'
@@ -23,7 +25,7 @@ mongoose.connection.once('open', () => {
 })
 
 const jwtAuth = expressjwt( {
-    //this turns key into token, must explicity declare which hashing algorithm your using
+    //this turns key into token, must explicitly declare which hashing algorithm your using
     secret: 'mossypiglets-and-pangolins',
     credentialsRequired: false,
     algorithms: ['HS256']
