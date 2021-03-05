@@ -42,7 +42,8 @@ module.exports = new GraphQLObjectType({
             },
             async resolve(parent, args) {
                 try {
-                    //create new user, Mongo will prevent users being created wtih an existing email or username
+                    //create new user, MongoDB config will prevent users being created with an existing email or username
+                    // ToDo - configure MongoDB under Windows to prevent duplicates
                     let newUser = await new UserModel({
                         email: args.email,
                         username: args.username,
@@ -52,7 +53,7 @@ module.exports = new GraphQLObjectType({
 
                     let validNewUser = await newUser.save( );
 
-                    //  todo - need to test this new error msg!
+                    //  Todo - need to test/force this error message ie what might prevent new user from saving?
                     if (!validNewUser) {
                         throw new Error(`Could not save new user with username ${args.username}`)
                     }
@@ -71,7 +72,7 @@ module.exports = new GraphQLObjectType({
                     return newUser; 
                 }
                 catch(err) {
-                    return new Error(`Could not add new user with the same username ${args.username} or email address ${args.email}`
+                    return new Error(`Could not add new user with the same username ${args.username} or email address ${args.email}`)
                 }
             }
         },
@@ -92,17 +93,17 @@ module.exports = new GraphQLObjectType({
             },
             async resolve(parent, args)
             {
-                //FYI validUser contains stuff regardless of whether a match is found or not!
-                const validUser = await UserModel.findOne({ "username": args.username})
-                if (!validUser) {
+                //ToDO - Issue that user variable contains stuff regardless of whether a match is found or not
+                //ToDo - Issue that only first user with given username is returned as duplicates are currently allowed in MongoDB under Windows
+                const user = await UserModel.findOne({ "username": args.username})
+                if (!user) {
                     throw new Error(`Could not find a user with username ${args.username}`)
                 }
-
                 const validPassword = await bcrypt.compare(args.password, user.password)
+                console.log(`validPassword: ${validPassword}`);
                 if (!validPassword) {
                     throw new Error('Incorrect password, please try again')
                 }
-
                 //log the existing user in and give them a new jwtoken
                 let token = jsonwebtoken.sign({
                         sub: user.id,
@@ -112,7 +113,6 @@ module.exports = new GraphQLObjectType({
                         expiresIn: '3 hours'
                     })
 
-                // FYI can add token to user object and see it in console, but not in returned GQL data object
                 user.access_token = token;
                 return  user;
             }
