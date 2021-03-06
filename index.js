@@ -11,7 +11,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-//change this URL if using cloud DB like Atlas
+//change this URL according to your environment eg if using cloud DB like Atlas
 // osx setup = 'mongodb://root:password@localhost:27017'
 // TODO - setup & force MongoDB auth on Windows, so username & pwd are required to connect to specified db
 mongoose.connect('mongodb://localhost:27017', {
@@ -33,6 +33,7 @@ const jwtAuth = expressjwt( {
 
 app.use(jwtAuth);
 
+// this is the URL & port from the Knowsys UI repo
 app.use(cors({origin: "http://localhost:3000"}));
 
 app.use('/graphql', graphqlHTTP({
