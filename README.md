@@ -5,6 +5,8 @@ This is the API repo for a social media "Today I Learned" app called Knowsy (pro
 
 The UI repo for this app is here - https://github.com/Mayden-Academy/2020-sept-knowsys-ui
 
+This app has been created using Node and MongoDB, with GraphQL for the API
+
 ## Live Demo
 The Knowsy app is live here - https://2020-sept-knowsys-ui.dev.io-academy.uk/
 
