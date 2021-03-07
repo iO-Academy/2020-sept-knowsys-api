@@ -11,17 +11,18 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-//change this URL according to your environment eg if using cloud DB like Atlas
-// osx setup = 'mongodb://root:password@localhost:27017'
-// TODO - setup & force MongoDB auth on Windows, so username & pwd are required to connect to specified db
-mongoose.connect('mongodb://localhost:27017', {
+//change these connectionDetails according to your MongoDB instance eg if using cloud DB like Atlas or localhost
+const connectionDetails = 'mongodb://<USERNAME>:<PASSWORD>@<URL>'
+
+const databaseName = 'tildb'
+mongoose.connect(connectionDetails, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    dbName: 'tildb'
+    dbName: databaseName
 })
 
 mongoose.connection.once('open', () => {
-    console.log('Connected to database tildb');
+    console.log(`Connected to database: ${databaseName}`);
 })
 
 const jwtAuth = expressjwt( {
