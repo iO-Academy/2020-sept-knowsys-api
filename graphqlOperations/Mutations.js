@@ -17,7 +17,9 @@ const UserModel = require('../mongoModels/UserModel');
 
 module.exports = new GraphQLObjectType({
     name: 'Mutation',
+    description: 'Mutations change data about users',
     fields: {
+
         // Mutation to Add New User to DB
         addUser: {
             type: UserType,
@@ -42,8 +44,8 @@ module.exports = new GraphQLObjectType({
             },
             async resolve(parent, args) {
                 try {
-                    //create new user, MongoDB config will prevent users being created with an existing email or username
-                    // ToDo - configure MongoDB under Windows to prevent duplicates
+                    //create new user - MongoDB config in OSX will prevent users being created with an existing email or username
+                    // ToDo - configure MongoDB in Atlas to prevent duplicates
                     let newUser = await new UserModel({
                         email: args.email,
                         username: args.username,
@@ -62,11 +64,10 @@ module.exports = new GraphQLObjectType({
                     let token = jsonwebtoken.sign({
                             sub: newUser.id,
                             email: newUser.email
-                        },
-                        'mossypiglets-and-pangolins',{
+                        }, 'mossypiglets-and-pangolins',{
                             expiresIn: '3 hours'
                         })
-                   
+
                     //return new user here, with token inside
                     newUser.access_token = token;
                     return newUser; 
@@ -93,28 +94,25 @@ module.exports = new GraphQLObjectType({
             },
             async resolve(parent, args)
             {
-                //ToDO - Issue that user variable contains stuff regardless of whether a match is found or not
-                //ToDo - Issue that only first user with given username is returned as duplicates are currently allowed in MongoDB under Windows
-                const user = await UserModel.findOne({ "username": args.username})
-                if (!user) {
+
+                //ToDo - Issue that only first user with given username is returned as duplicates are currently allowed in MongoDB Atlas
+                const existingUser = await UserModel.findOne({ "username": args.username})
+                if (!existingUser) {
                     throw new Error(`Could not find a user with username ${args.username}`)
                 }
-                const validPassword = await bcrypt.compare(args.password, user.password)
-                console.log(`validPassword: ${validPassword}`);
+                const validPassword = await bcrypt.compare(args.password, existingUser.password)
                 if (!validPassword) {
                     throw new Error('Incorrect password, please try again')
                 }
-                //log the existing user in and give them a new jwtoken
+                //login the existing user by giving them a new jwtoken
                 let token = jsonwebtoken.sign({
-                        sub: user.id,
-                        email: user.email
-                        },
-                    'mossypiglets-and-pangolins',{
+                        sub: existingUser.id,
+                        email: existingUser.email
+                        }, 'mossypiglets-and-pangolins',{
                         expiresIn: '3 hours'
                     })
-
-                user.access_token = token;
-                return  user;
+                existingUser.access_token = token;
+                return  existingUser;
             }
         }
     }
