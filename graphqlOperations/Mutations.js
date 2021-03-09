@@ -1,6 +1,6 @@
 const graphql = require('graphql');
-const bcrypt = require('bcrypt')
-const jsonwebtoken = require('jsonwebtoken')
+const bcrypt = require('bcrypt');
+const jsonwebtoken = require('jsonwebtoken');
 
 const {
     GraphQLObjectType,
@@ -111,7 +111,7 @@ module.exports = new GraphQLObjectType({
                         }, 'mossypiglets-and-pangolins',{
                         expiresIn: '3 hours'
                     })
-                existingUser.access_token = token;
+                existingUser.access_token = token
                 return  existingUser;
             }
         }

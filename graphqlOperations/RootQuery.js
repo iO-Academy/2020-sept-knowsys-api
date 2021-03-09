@@ -66,11 +66,13 @@ module.exports = new GraphQLObjectType({
                     description: 'UserName of the required User'
                 }
             },
-            resolve(parent, args) {
+            async resolve(parent, args) {
                 if (!args.username) {
-                    return UserModel.find({});
+                    let multipleUsers = await UserModel.find({})
+                    return multipleUsers;
                 }
-                return UserModel.find({"username": args.username})
+                let singleUser = await UserModel.find({"username": args.username})
+                return singleUser;
             }
         }
     }
