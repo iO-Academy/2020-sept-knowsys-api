@@ -8,5 +8,5 @@ const userSchema = new Schema({
     bio: String
 });
 
-//first param is name of relevant collection in mongodb
+//first param is name of relevant collection in MongoDB where data is saved
 module.exports = mongoose.model('learners', userSchema);

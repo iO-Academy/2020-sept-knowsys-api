@@ -9,15 +9,15 @@ const {
 
 module.exports = new GraphQLObjectType({
     name: 'User',
-    description: 'A single user',
+    description: 'A single user/learner',
     fields: () => ({
         _id: {
             type: GraphQLID,
-            description: 'ObjectId'
+            description: 'ObjectId of User'
         },
         email: {
             type: GraphQLString,
-            description: 'Email of user'
+            description: 'Email of User'
         },
         username: {
             type: GraphQLString,
@@ -25,15 +25,15 @@ module.exports = new GraphQLObjectType({
         },
         password: {
             type: GraphQLString,
-            description: 'Password of user'
+            description: 'Password of User'
         },
         bio: {
             type: GraphQLString,
-            description: 'Bio of user'
+            description: 'Bio of User'
         },
         access_token: {
             type: GraphQLString,
-            description: 'Access token of user'
+            description: 'Access token of the User'
         }
     })
 });
