@@ -5,7 +5,7 @@ const mongoose = require('mongoose').set('debug', true);
 const expressjwt = require('express-jwt');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(bodyParser.json());
